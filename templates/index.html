@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Live Translator — Unified</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    body { font-family: Arial, sans-serif; margin:16px; background:#f9f9f9; }
+    .container { display:flex; gap:12px; margin-bottom:12px; }
+    .pane { width:48%; border:1px solid #ddd; padding:8px; border-radius:6px; background:#fafafa; box-shadow:1px 1px 5px rgba(0,0,0,0.05); }
+    .textbox { min-height:200px; border:1px dashed #ccc; padding:8px; white-space:pre-wrap; font-size:18px; line-height:1.4; background:#fff; border-radius:4px; overflow:auto; }
+    .mirrored { transform: scaleX(-1); direction:ltr; }
+    .mirrored .msg { transform: scaleX(-1); }
+    .controls { margin-top:10px; }
+    button { padding:8px 12px; margin-right:8px; border:none; background:#4a90e2; color:white; font-weight:bold; border-radius:4px; cursor:pointer; }
+    button:hover { background:#357ABD; }
+    select { padding:6px; margin-right:8px; border-radius:4px; border:1px solid #ccc; }
+    .status { margin-top:8px; color:#333; font-weight:bold; }
+    .mic-indicator { display:inline-block; width:12px; height:12px; border-radius:50%; background:red; margin-left:5px; vertical-align:middle; }
+    .mic-active { background:green; }
+    .heading { font-weight:700; margin-bottom:6px; }
+    .msg { margin:6px 0; padding:4px 6px; border-radius:6px; max-width:90%; display:block; }
+    .msg-foreigner { background:#dfefff; color:#000; }
+    .msg-korean { background:#ffeedd; color:#000; }
+  </style>
+</head>
+<body>
+<h2>Live Translator — HANARO</h2>
+
+<div class="container">
+  <div class="pane">
+    <div class="heading">Left — Local / Original Speech</div>
+    <div id="left_box" class="textbox">(no text yet)</div>
+  </div>
+  <div class="pane">
+    <div class="heading">Right — Other Language (Mirrored)</div>
+    <div id="right_box" class="textbox mirrored"><div id="right_inner"></div></div>
+  </div>
+</div>
+
+<div class="controls">
+  Role for this tab: <strong id="role_name"></strong><br>
+  <label id="lang_label" for="lang">Local speech language:</label>
+  <select id="lang">
+    <option value="en">English</option>
+    <option value="ne">Nepali</option>
+    <option value="hi">Hindi</option>
+    <option value="zh-cn">Chinese</option>
+    <option value="ja">Japanese</option>
+    <option value="es">Spanish</option>
+    <option value="fr">French</option>
+  </select>
+  <label><input type="checkbox" id="tts" checked> Play translation audio</label>
+  <div id="status" class="status"></div>
+  <div>Mic: <span id="micIndicator" class="mic-indicator"></span></div>
+  <button id="btnToggle">Stop Listening</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+const params = new URLSearchParams(window.location.search);
+const roleParam = (params.get('role') || 'foreigner').toLowerCase();
+const role = (roleParam === 'korean') ? 'korean' : 'foreigner';
+document.getElementById('role_name').innerText = role;
+
+const socket = io();
+
+const leftBox = document.getElementById('left_box');
+const rightInner = document.getElementById('right_inner');
+const langSel = document.getElementById('lang');
+const status = document.getElementById('status');
+const micIndicator = document.getElementById('micIndicator');
+const btnToggle = document.getElementById('btnToggle');
+const ttsCheckbox = document.getElementById('tts');
+
+if(role === 'korean'){
+    langSel.value = 'ko';
+    langSel.style.display = 'none';
+    document.getElementById('lang_label').style.display = 'none';
+} else {
+    langSel.value = 'en';
+}
+
+// send language to server
+function sendLanguage() {
+    socket.emit('set_language', { lang: langSel.value });
+}
+sendLanguage();
+langSel.onchange = sendLanguage;
+
+// Speech recognition
+let recognition, listening = true;
+if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    status.textContent = 'Web Speech API not supported — use Chrome/Edge.';
+} else {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.lang = (role==='korean')?'ko':langSel.value;
+
+    recognition.onstart = () => { micIndicator.classList.add('mic-active'); status.textContent='Listening...'; };
+    recognition.onspeechstart = () => micIndicator.classList.add('mic-active');
+    recognition.onspeechend = () => { micIndicator.classList.remove('mic-active'); status.textContent='Processing...'; };
+    recognition.onend = () => { micIndicator.classList.remove('mic-active'); if(listening) recognition.start(); };
+    recognition.onresult = (event) => {
+        const text = event.results[event.results.length-1][0].transcript.trim();
+        socket.emit('speak', { role: role, text: text, src: recognition.lang });
+    };
+    recognition.onerror = (e) => { status.textContent = 'Recognition error: ' + e.error; };
+    recognition.start();
+}
+
+btnToggle.onclick = () => {
+    listening = !listening;
+    if(listening) {
+        recognition.lang = (role==='korean')?'ko':langSel.value;
+        recognition.start(); btnToggle.textContent='Stop Listening'; status.textContent='Listening...';
+    } else { recognition.stop(); btnToggle.textContent='Start Listening'; micIndicator.classList.remove('mic-active'); status.textContent='Stopped'; }
+}
+
+// append messages
+function appendMessage(container, text, speaker) {
+    const msg = document.createElement('div');
+    msg.className = (speaker==='foreigner')?'msg msg-foreigner':'msg msg-korean';
+    msg.innerText = text;
+    container.appendChild(msg);
+    container.scrollTop = container.scrollHeight;
+}
+
+socket.on('new_message', (data)=>{
+    const origin = data.origin_role;
+    const forOrigin = data.payload_for_origin;
+    const forOther = data.payload_for_other;
+
+    if(role === origin){
+        appendMessage(leftBox, forOrigin.normal_text, origin);
+        appendMessage(rightInner, forOrigin.mirrored_text, origin);
+        if(ttsCheckbox.checked) speak(forOrigin.mirrored_text, forOrigin.tts_lang);
+    } else {
+        appendMessage(leftBox, forOther.normal_text, origin);
+        appendMessage(rightInner, forOther.mirrored_text, origin);
+        if(ttsCheckbox.checked) speak(forOther.normal_text, forOther.tts_lang);
+    }
+});
+
+// TTS function with dynamic language
+function speak(txt, lang){
+    if(!txt||!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(txt);
+    const langMap = {
+        'en': 'en-US',
+        'ko': 'ko-KR',
+        'ne': 'ne-NP',
+        'hi': 'hi-IN',
+        'zh-cn': 'zh-CN',
+        'ja': 'ja-JP',
+        'es': 'es-ES',
+        'fr': 'fr-FR'
+    };
+    u.lang = langMap[lang] || 'en-US';
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+}
+</script>
+</body>
+</html>

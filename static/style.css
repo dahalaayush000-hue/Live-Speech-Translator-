@@ -1,0 +1,23 @@
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 16px;
+  background-color: #f9f9f9;
+}
+
+.container { display:flex; gap:12px; margin-bottom:12px; }
+.pane { width:48%; border:1px solid #ddd; padding:8px; border-radius:6px; background:#fafafa; box-shadow:1px 1px 5px rgba(0,0,0,0.05); }
+.textbox { min-height:200px; border:1px dashed #ccc; padding:8px; white-space:pre-wrap; font-size:18px; line-height:1.4; background:#fff; border-radius:4px; overflow:auto; }
+.mirrored { transform: scaleX(-1); direction: ltr; }
+.mirrored #right_inner { transform: scaleX(-1); }
+.controls { margin-top:10px; }
+button { padding:8px 12px; margin-right:8px; border:none; background-color:#4a90e2; color:white; font-weight:bold; border-radius:4px; cursor:pointer; }
+button:hover { background-color:#357ABD; }
+select { padding:6px; margin-right:8px; border-radius:4px; border:1px solid #ccc; }
+.status { margin-top:8px; color:#333; font-weight:bold; }
+.mic-indicator { display:inline-block; width:12px; height:12px; border-radius:50%; background:red; margin-left:5px; vertical-align:middle; }
+.mic-active { background:green; }
+.heading { font-weight:700; margin-bottom:6px; }
+.msg { margin:6px 0; padding:6px 8px; border-radius:6px; max-width:90%; display:inline-block; }
+.msg.origin { background:#dfefff; }
+.msg.reply { background:#ffeedd; }
