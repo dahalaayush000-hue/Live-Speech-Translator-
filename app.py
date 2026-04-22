@@ -10,7 +10,7 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 translator = Translator()
 
-# Store user language: session id -> language code
+# Store user language:session id -> language code
 user_languages = {}
 
 @app.route('/')
