@@ -11,7 +11,6 @@ Two people open the app in separate tabs (or on separate devices on the same net
 The UI has a mirrored layout so both people can hold the screen between them and read from their own side.
 
 ---
-
 ## Tech stack
 
 - **Backend** — Flask + Flask-SocketIO (eventlet)
@@ -21,7 +20,6 @@ The UI has a mirrored layout so both people can hold the screen between them and
 - **Real-time** — WebSockets via Socket.IO
 
 ---
-
 ## Running locally
 
 **Requirements:** Python 3.10+, Chrome or Edge browser
