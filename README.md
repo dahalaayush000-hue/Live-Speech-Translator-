@@ -3,13 +3,11 @@
 A real-time speech-to-speech translation web app built for face-to-face conversations between people speaking different languages. Originally built for Korean ↔ foreign language use cases, but supports multiple language pairs.
 
 ---
-
 ## What it does
 
 Two people open the app in separate tabs (or on separate devices on the same network). Each person speaks in their language, the speech gets transcribed, translated, and shown to the other person — with optional text-to-speech playback.
 
 The UI has a mirrored layout so both people can hold the screen between them and read from their own side.
-
 ---
 ## Tech stack
 
@@ -48,7 +46,6 @@ Speak in one tab. The translation appears in the other.
 > **Browser note:** Web Speech API only works in Chrome and Edge. Firefox and Safari don't support it — you'll just see a "not supported" message.
 
 ---
-
 ## Supported languages
 
 On the foreigner side you can select: English, Hindi, Nepali, Chinese (Simplified), Japanese, Spanish, French. The Korean side is fixed to Korean.
