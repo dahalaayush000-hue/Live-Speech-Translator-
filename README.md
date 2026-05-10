@@ -2,7 +2,8 @@
 
 A real-time speech-to-speech translation web app built for face-to-face conversations between people speaking different languages. Originally built for Korean ↔ foreign language use cases, but supports multiple language pairs.
 
----
+--
+
 ## What it does
 
 Two people open the app in separate tabs (or on separate devices on the same network). Each person speaks in their language, the speech gets transcribed, translated, and shown to the other person — with optional text-to-speech playback.
@@ -10,7 +11,6 @@ Two people open the app in separate tabs (or on separate devices on the same net
 The UI has a mirrored layout so both people can hold the screen between them and read from their own side.
 ---
 ## Tech stack
-
 - **Backend** — Flask + Flask-SocketIO (eventlet)
 - **Translation** — `googletrans` (unofficial Google Translate wrapper — see disclaimer below)
 - **Speech input** — Web Speech API (browser-native, Chrome/Edge only)
