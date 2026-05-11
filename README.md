@@ -4,6 +4,7 @@ A real-time speech-to-speech translation web app built for face-to-face conversa
 
 --
 
+
 ## What it does
 
 Two people open the app in separate tabs (or on separate devices on the same network). Each person speaks in their language, the speech gets transcribed, translated, and shown to the other person — with optional text-to-speech playback.
