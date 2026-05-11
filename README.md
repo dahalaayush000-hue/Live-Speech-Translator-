@@ -1,9 +1,7 @@
 # Live Speech Translator — HANARO
 
 A real-time speech-to-speech translation web app built for face-to-face conversations between people speaking different languages. Originally built for Korean ↔ foreign language use cases, but supports multiple language pairs.
-
 --
-
 
 ## What it does
 
