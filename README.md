@@ -16,6 +16,7 @@ The UI has a mirrored layout so both people can hold the screen between them and
 - **Speech input** — Web Speech API (browser-native, Chrome/Edge only)
 - **Speech output** — SpeechSynthesis API (browser-native)
 - **Real-time** — WebSockets via Socket.IO
+- 
 
 ---
 ## Running locally
