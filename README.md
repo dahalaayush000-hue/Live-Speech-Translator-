@@ -20,6 +20,8 @@ The UI has a mirrored layout so both people can hold the screen between them and
 ---
 ## Running locally
 
+
+
 **Requirements:** Python 3.10+, Chrome or Edge browser
 
 ```bash
