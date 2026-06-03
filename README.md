@@ -9,6 +9,7 @@ Two people open the app in separate tabs (or on separate devices on the same net
 
 The UI has a mirrored layout so both people can hold the screen between them and read from their own side.
 ---
+
 ## Tech stack
 - **Backend** — Flask + Flask-SocketIO (eventlet)
 - **Translation** — `googletrans` (unofficial Google Translate wrapper — see disclaimer below)
